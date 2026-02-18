@@ -1,0 +1,111 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+
+#include "TC_FSMComponent.h"
+
+#include "TC_FSMLog.h"
+#include "TC_FSMSystem.h"
+#include "States/TC_DeinitState.h"
+#include "States/TC_InitState.h"
+#include "States/TC_NeutralState.h"
+#include "States/TC_PatrolState.h"
+
+
+UTC_FSMComponent::UTC_FSMComponent()
+{
+	PrimaryComponentTick.bCanEverTick = true;
+	SetComponentTickInterval(2.f);
+}
+
+void UTC_FSMComponent::BeginPlay()
+{
+	Super::BeginPlay();
+
+	fsm = NewObject<UTC_FSMSystem>();
+	fsm->SetContext(this);
+
+	fsm->OnFSMStateTransitionedDelegate.AddUObject(this, &UTC_FSMComponent::OnFsmStateTransitioned);
+
+	UTC_InitState* initState = NewObject<UTC_InitState>();
+	initState->SetStateName("Init");
+	initState->SetFSM(fsm.Get());
+	initState->AddTransition("TransitionToNeutral", "Neutral");
+	initState->AddTransition("TransitionToDeinit", "Deinit");
+
+	UTC_NeutralState* neutralState = NewObject<UTC_NeutralState>();
+	neutralState->SetStateName("Neutral");
+	neutralState->SetFSM(fsm.Get());
+	neutralState->AddTransition("TransitionToPatrol", "Patrol");
+	neutralState->AddTransition("TransitionToDeinit", "Deinit");
+
+	UTC_PatrolState* patrolState = NewObject<UTC_PatrolState>();
+	patrolState->SetStateName("Patrol");
+	patrolState->SetFSM(fsm.Get());
+	patrolState->AddTransition("TransitionToNeutral", "Neutral");
+	patrolState->AddTransition("TransitionToDeinit", "Deinit");
+
+	UTC_DeinitState* deinitState = NewObject<UTC_DeinitState>();
+	deinitState->SetStateName("Deinit");
+	deinitState->SetFSM(fsm.Get());
+
+	fsm->AddState(initState);
+	fsm->AddState(neutralState);
+	fsm->AddState(patrolState);
+	fsm->AddState(deinitState);
+
+	if (fsm->GetCurrentState())
+	{
+		fsm->GetCurrentState()->OnEnter();
+	}
+}
+
+void UTC_FSMComponent::EndPlay(const EEndPlayReason::Type endPlayReason)
+{
+	if (fsm)
+	{
+		fsm->OnFSMStateTransitionedDelegate.RemoveAll(this);
+
+		for (UTC_FSMState* state : fsm->GetStates())
+		{
+			if (!state->IsValidLowLevel())
+			{
+				continue;
+			}
+			state->ConditionalBeginDestroy();
+		}
+	}
+
+	Super::EndPlay(endPlayReason);
+}
+
+void UTC_FSMComponent::TickComponent(float deltaTime, ELevelTick tickType, FActorComponentTickFunction* thisTickFunction)
+{
+	Super::TickComponent(deltaTime, tickType, thisTickFunction);
+
+	if (fsm)
+	{
+		fsm->Update(deltaTime);
+	}
+}
+
+void UTC_FSMComponent::OnFsmStateTransitioned(const FName transitionName, const FName oldStateName, const FName newStateName)
+{
+	UE_LOG(LogTwoCoinsFSM, Warning, TEXT("FSM Transitioned: %s, [%s] --> [%s] | %hs"),
+	       *transitionName.ToString(),
+	       *oldStateName.ToString(),
+	       *newStateName.ToString(),
+	       __FUNCTION__);
+	// TODO: add a trigger example here
+}
+
+void UTC_FSMComponent::StateTransitionTo(const FName stateNameToTransitTo)
+{
+	if (!fsm)
+	{
+		UE_LOG(LogTwoCoinsFSM, Error, TEXT("FSM is not valid!"));
+		return;
+	}
+
+	UE_LOG(LogTwoCoinsFSM, Warning, TEXT("FSM CurrentState: %s"), *fsm->GetCurrentState()->GetStateName().ToString());
+	fsm.Get()->TransitionTo(stateNameToTransitTo);
+}
