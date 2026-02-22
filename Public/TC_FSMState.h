@@ -21,13 +21,16 @@ public :
 
 	void SetStateName(FName inName);
 	void AddTransition(FName transitionName, FName targetStateName);
+	void AddTransition(const FName targetStateName);
 	void DeleteTransition(FName transitionName);
 	void SetFSM(class UTC_FSMSystem* fsm);
+	void ToggleAllowedToSelfTransition(const bool bAllowed);
 
 	FName GetStateName() const;
 	FName GetStateNameFromTransition(FName transitionName);
+	bool IsAllowedToSelfTransition() const { return bAllowedToSelfTransition; }
 
-	class UTC_FSMSystem* GetFSM() const;
+	UTC_FSMSystem* GetFSM() const;
 
 protected:
 	UPROPERTY()
@@ -38,4 +41,7 @@ protected:
 
 	UPROPERTY()
 	TMap<FName, FName> transitions;
+
+	UPROPERTY()
+	bool bAllowedToSelfTransition = false;
 };

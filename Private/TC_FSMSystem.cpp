@@ -54,9 +54,15 @@ void UTC_FSMSystem::RemoveState(const UTC_FSMState* state)
 void UTC_FSMSystem::TransitionTo(const FName transitionName)
 {
 	const FName stateNameToTransitTo = currentState->GetStateNameFromTransition(transitionName);
+	if (stateNameToTransitTo == currentState->GetStateName() && !currentState->IsAllowedToSelfTransition())
+	{
+		UE_LOG(LogTwoCoinsFSM, Error, TEXT("TransitionTo: %s is FAILED, self-transition is not allowed for this state | %hs"), *transitionName.ToString(), __FUNCTION__);
+		return;
+	}
+
 	if (stateNameToTransitTo == NAME_None)
 	{
-		UE_LOG(LogTwoCoinsFSM, Warning, TEXT("TransitionTo: %s is FAILED |%hs"), *transitionName.ToString(), __FUNCTION__);
+		UE_LOG(LogTwoCoinsFSM, Error, TEXT("TransitionTo: %s is FAILED, no transition found! (stateNameToTransitTo is 'NAME_None') | %hs"), *transitionName.ToString(), __FUNCTION__);
 		return;
 	}
 

@@ -5,6 +5,7 @@
 
 #include "TC_FSMLog.h"
 
+#define DEFAULT_TRANSITION_PREFIX_STR TEXT("TransitionTo")
 
 void UTC_FSMState::OnEnter()
 {
@@ -35,6 +36,16 @@ void UTC_FSMState::AddTransition(const FName transitionName, const FName targetS
 	transitions.Add(transitionName, targetStateName);
 }
 
+void UTC_FSMState::AddTransition(const FName targetStateName)
+{
+	const FString transitionNameStr = DEFAULT_TRANSITION_PREFIX_STR + targetStateName.ToString();
+	if (transitions.Contains(FName(transitionNameStr)))
+	{
+		return;
+	}
+	transitions.Add(FName(transitionNameStr), targetStateName);
+}
+
 void UTC_FSMState::DeleteTransition(const FName transitionName)
 {
 	if (!transitions.Contains(transitionName))
@@ -47,6 +58,22 @@ void UTC_FSMState::DeleteTransition(const FName transitionName)
 void UTC_FSMState::SetFSM(UTC_FSMSystem* fsm)
 {
 	fsmSystem = fsm;
+}
+
+void UTC_FSMState::ToggleAllowedToSelfTransition(const bool bAllowed)
+{
+	bAllowedToSelfTransition = bAllowed;
+
+	if (!bAllowed) // no more processing if SelfTransition is not allowed
+	{
+		return;
+	}
+
+	const FName* selfKeyName = transitions.FindKey(stateName);
+	if (selfKeyName == nullptr)
+	{
+		AddTransition(stateName);
+	}
 }
 
 FName UTC_FSMState::GetStateName() const

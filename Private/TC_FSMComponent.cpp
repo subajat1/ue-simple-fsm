@@ -28,24 +28,28 @@ void UTC_FSMComponent::BeginPlay()
 	UTC_InitState* initState = NewObject<UTC_InitState>();
 	initState->SetStateName("Init");
 	initState->SetFSM(fsm.Get());
-	initState->AddTransition("TransitionToInit", "Init");
-	initState->AddTransition("TransitionToNeutral", "Neutral");
-	initState->AddTransition("TransitionToDeinit", "Deinit");
+	initState->ToggleAllowedToSelfTransition(true);
+	initState->AddTransition("Init");
+	initState->AddTransition("Neutral");
+	initState->AddTransition("Deinit");
+	initState->ToggleAllowedToSelfTransition(true);
 
 	UTC_NeutralState* neutralState = NewObject<UTC_NeutralState>();
 	neutralState->SetStateName("Neutral");
 	neutralState->SetFSM(fsm.Get());
-	neutralState->AddTransition("TransitionToPatrol", "Patrol");
-	neutralState->AddTransition("TransitionToDeinit", "Deinit");
+	neutralState->AddTransition("Neutral");
+	neutralState->AddTransition("Patrol");
+	neutralState->AddTransition("Deinit");
 
 	UTC_PatrolState* patrolState = NewObject<UTC_PatrolState>();
 	patrolState->SetStateName("Patrol");
 	patrolState->SetFSM(fsm.Get());
-	patrolState->AddTransition("TransitionToNeutral", "Neutral");
-	patrolState->AddTransition("TransitionToDeinit", "Deinit");
+	patrolState->AddTransition("Neutral");
+	patrolState->AddTransition("Deinit");
 
 	UTC_DeinitState* deinitState = NewObject<UTC_DeinitState>();
 	deinitState->SetStateName("Deinit");
+	deinitState->AddTransition("Init");
 	deinitState->SetFSM(fsm.Get());
 
 	fsm->AddState(initState);
