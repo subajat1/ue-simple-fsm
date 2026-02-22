@@ -18,4 +18,11 @@ public:
 	virtual void OnEnter() override;
 	virtual void Update(float deltaSecond) override;
 	virtual void OnLeave() override;
+	
+private:
+	UPROPERTY()
+	int32 tickCounter = 0;
+	
+	UPROPERTY()
+	int32 tickCounterThreshold = 4;
 };
