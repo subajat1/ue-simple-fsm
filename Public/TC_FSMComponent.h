@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// TwoCoins subajat1 Copyright 2026
 
 #pragma once
 
@@ -27,6 +27,9 @@ private:
 public:
 	UFUNCTION(BlueprintCallable)
 	void StateTransitionTo(const FName stateNameToTransitTo);
+
+public:
+	class UTC_FSMSystem* GetFSM() const { return fsm; }
 
 private:
 	UPROPERTY(Transient)

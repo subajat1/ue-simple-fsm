@@ -1,5 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
+// TwoCoins subajat1 Copyright 2026
 
 #include "TC_FSMComponent.h"
 
@@ -22,7 +21,7 @@ void UTC_FSMComponent::BeginPlay()
 	Super::BeginPlay();
 
 	fsm = NewObject<UTC_FSMSystem>();
-	fsm->SetContext(this);
+	fsm->SetContext(GetOwner());
 
 	fsm->OnFSMStateTransitionedDelegate.AddUObject(this, &UTC_FSMComponent::OnFsmStateTransitioned);
 
@@ -90,10 +89,11 @@ void UTC_FSMComponent::TickComponent(float deltaTime, ELevelTick tickType, FActo
 
 void UTC_FSMComponent::OnFsmStateTransitioned(const FName transitionName, const FName oldStateName, const FName newStateName)
 {
-	UE_LOG(LogTwoCoinsFSM, Warning, TEXT("FSM Transitioned: %s, [%s] --> [%s] | %hs"),
+	UE_LOG(LogTwoCoinsFSM, Warning, TEXT("FSM Transitioned: %s, [%s] --> [%s] (:: %s) | %hs"),
 	       *transitionName.ToString(),
 	       *oldStateName.ToString(),
 	       *newStateName.ToString(),
+	       *GetNameSafe(GetOwner()),
 	       __FUNCTION__);
 	// TODO: add a trigger example here
 }
@@ -103,6 +103,11 @@ void UTC_FSMComponent::StateTransitionTo(const FName stateNameToTransitTo)
 	if (!fsm)
 	{
 		UE_LOG(LogTwoCoinsFSM, Error, TEXT("FSM is not valid!"));
+		return;
+	}
+	if (!fsm->GetCurrentState())
+	{
+		UE_LOG(LogTwoCoinsFSM, Error, TEXT("FSM Current State is not valid!"));
 		return;
 	}
 

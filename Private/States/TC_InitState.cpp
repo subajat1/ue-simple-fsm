@@ -1,21 +1,23 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
+// TwoCoins subajat1 Copyright 2026
 
 #include "States/TC_InitState.h"
 
 #include "TC_FSMLog.h"
+#include "TC_FSMSystem.h"
 
 void UTC_InitState::OnEnter()
 {
-	UE_LOG(LogTwoCoinsFSM, Log, TEXT("Entered Init State"));
+	const FString fsmContextStr = FString::Printf(TEXT("Context: %s"), fsmSystem && fsmSystem->GetContext() ? *fsmSystem->GetContext()->GetName() : TEXT("no-context"));
+	UE_LOG(LogTwoCoinsFSM, Log, TEXT("%hs | FSM %s"), __FUNCTION__, *fsmContextStr);
 }
 
 void UTC_InitState::Update(float deltaSecond)
 {
-	UE_LOG(LogTwoCoinsFSM, Log, TEXT("Update Init State"));
+	// nothing to update
 }
 
 void UTC_InitState::OnLeave()
 {
-	UE_LOG(LogTwoCoinsFSM, Log, TEXT("Left Init State"));
+	const FString fsmContextStr = FString::Printf(TEXT("Context: %s"), fsmSystem && fsmSystem->GetContext() ? *fsmSystem->GetContext()->GetName() : TEXT("no-context"));
+	UE_LOG(LogTwoCoinsFSM, Log, TEXT("%hs | FSM %s"), __FUNCTION__, *fsmContextStr);
 }

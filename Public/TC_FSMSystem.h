@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "TC_FSMDelegates.h"
 #include "UObject/Object.h"
 
 #include "TC_FSMSystem.generated.h"
@@ -15,7 +16,6 @@ class TC_FSM_API UTC_FSMSystem : public UObject
 	GENERATED_BODY()
 
 public:
-	DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnFSMStateTransitionedSignature, FName /* TransitionName */, FName /* OldState */, FName /* NewState */)
 	FOnFSMStateTransitionedSignature OnFSMStateTransitionedDelegate;
 
 public:

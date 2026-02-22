@@ -1,4 +1,6 @@
-﻿#pragma once
+﻿// TwoCoins subajat1 Copyright 2026
+
+#pragma once
 
 #include "Modules/ModuleManager.h"
 

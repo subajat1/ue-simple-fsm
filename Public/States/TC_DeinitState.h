@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// TwoCoins subajat1 Copyright 2026
 
 #pragma once
 

@@ -1,4 +1,6 @@
-﻿#include "TC_FSM.h"
+﻿// TwoCoins subajat1 Copyright 2026
+
+#include "TC_FSM.h"
 
 #define LOCTEXT_NAMESPACE "FTC_FSMModule"
 
