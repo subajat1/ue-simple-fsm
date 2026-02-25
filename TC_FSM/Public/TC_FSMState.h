@@ -9,8 +9,8 @@
 /**
  * 
  */
-UCLASS()
-class UTC_FSMState : public UObject
+UCLASS(Abstract)
+class TC_FSM_API UTC_FSMState : public UObject
 {
 	GENERATED_BODY()
 
